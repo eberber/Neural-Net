@@ -8,12 +8,16 @@ class perceptron():
     labelsList = []
     weightedSum = 0.0
     activation = 0 
+    total = 0
 #######################################    FUNCTIONS  ############################################
-    def __init__(self, no_of_inputs, epochs=30, learning_rate=0.01):
+    def __init__(self, no_of_inputs, targetColor, epochs=30, learning_rate=0.1):
         self.epochs = epochs
         self.learning_rate = learning_rate
         #init will be zero, but changes as we adjust in activation function 
         self.weights = np.zeros(no_of_inputs)
+        self.targetColor = targetColor
+        self.correct = 0 #init to 0
+        self.numCorrect = 0
 
 #splits input into RGB and label list
     def readFile(self):
@@ -27,14 +31,11 @@ class perceptron():
                         self.labelsList.append(j.strip('\n'))
                 self.RGBList.append(np.array(tempRGB))
                 tempRGB = []
-        print(self.RGBList)
-        print(self.labelsList)
 
 # input * weight, then sums results
     def calcWeightedSum(self, color):
         for rgbValue in range(len(color)):
             self.weightedSum += color[rgbValue] * self.weights[rgbValue]
-            print(self.weightedSum)                
 
 #sets activation to 1 or 0    
     def prediction(self):
@@ -42,6 +43,20 @@ class perceptron():
             self.activation = 1
         else:
             self.activation = 0            
+
+#states what color we output
+    def identifyColor(self, label):
+        if self.targetColor == label and self.activation == 1: #color matched and we got a yes
+            self.correct = 1
+            self.numCorrect += 1
+        elif self.targetColor == label and self.activation == 0:
+            self.correct = 1
+        elif self.targetColor != label and self.activation == 1: #color did not match but we got a yes
+            self.correct = 0
+        elif self.targetColor != label and self.activation == 0:
+            self.correct = 0
+            self.numCorrect += 1
+
 #run for x epochs
     def trainNeuron(self):
         self.readFile()
@@ -50,12 +65,26 @@ class perceptron():
             for color, label in zip(self.RGBList, self.labelsList):
                 self.calcWeightedSum(color)
                 self.prediction()
-                self.weights += self.learning_rate * (1 - self.activation) * color
+                self.identifyColor(label)
+                self.weights += self.learning_rate * (self.correct - self.activation) * color
+                self.total += 1
 
 #######################################     MAIN   ############################################
 def main():
-    neuron = perceptron(3) #takes RGB, so 3 
-    neuron.trainNeuron()
+    neronList = []
+    colorList = ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange', 'Brown', 'Pink', 'Gray']
+    total = 0
+    wins = 0
+    #init 9 perceptrons of each color with 3 inputs each representing RGB
+    for color in colorList:
+        neuron = perceptron(3, color)
+        neuron.trainNeuron()
+        total += neuron.total
+        wins += neuron.numCorrect
+        neronList.append(neuron)
+    print("WINS", wins)
+    print("TOTAL", total)
+    print("TOTAL ACCURACY: ", (wins/total) * 100, "%")
 
 if __name__ == "__main__":
     main()
