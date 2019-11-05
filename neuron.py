@@ -10,7 +10,7 @@ class perceptron():
     activation = 0 
     total = 0
 #######################################    FUNCTIONS  ############################################
-    def __init__(self, no_of_inputs, targetColor, epochs=30, learning_rate=0.1):
+    def __init__(self, no_of_inputs, targetColor, epochs=100, learning_rate=0.1):
         self.epochs = epochs
         self.learning_rate = learning_rate
         #init will be zero, but changes as we adjust in activation function 
@@ -44,7 +44,7 @@ class perceptron():
         else:
             self.activation = 0            
 
-#states what color we output
+#states what perceptron thought was the right value
     def identifyColor(self, label):
         if self.targetColor == label and self.activation == 1: #color matched and we got a yes
             self.correct = 1
@@ -74,17 +74,17 @@ def main():
     neronList = []
     colorList = ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange', 'Brown', 'Pink', 'Gray']
     total = 0
-    wins = 0
+    correct = 0
     #init 9 perceptrons of each color with 3 inputs each representing RGB
     for color in colorList:
         neuron = perceptron(3, color)
         neuron.trainNeuron()
         total += neuron.total
-        wins += neuron.numCorrect
+        correct += neuron.numCorrect
         neronList.append(neuron)
-    print("WINS", wins)
-    print("TOTAL", total)
-    print("TOTAL ACCURACY: ", (wins/total) * 100, "%")
+    print("TOTAL CORRECT", correct)
+    print("TOTAL    ", total)
+    print("TOTAL ACCURACY: ", round((correct/total) * 100, 2), "%")
 
 if __name__ == "__main__":
     main()
