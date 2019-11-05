@@ -17,7 +17,7 @@ class perceptron():
 
 #splits input into RGB and label list
     def readFile(self):
-        tempRGB = []  
+        tempRGB = []
         with open(self.fileName) as f:
             for i in f.readlines():
                 for j in i.split():
@@ -25,7 +25,7 @@ class perceptron():
                         tempRGB.append(int(j))
                     else: #found label
                         self.labelsList.append(j.strip('\n'))
-                self.RGBList.append(tempRGB)
+                self.RGBList.append(np.array(tempRGB))
                 tempRGB = []
         print(self.RGBList)
         print(self.labelsList)
@@ -43,20 +43,19 @@ class perceptron():
         else:
             self.activation = 0            
 #run for x epochs
-    def runEpochs(self):
+    def trainNeuron(self):
         self.readFile()
         #need to run for # of epochs and each RGB group
         for _ in range(self.epochs):
             for color, label in zip(self.RGBList, self.labelsList):
                 self.calcWeightedSum(color)
                 self.prediction()
-                #modify weights
-                self.weights += self.learning_rate * (1 - self.activation) #* color
+                self.weights += self.learning_rate * (1 - self.activation) * color
 
 #######################################     MAIN   ############################################
 def main():
     neuron = perceptron(3) #takes RGB, so 3 
-    neuron.runEpochs()
+    neuron.trainNeuron()
 
 if __name__ == "__main__":
     main()
