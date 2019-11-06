@@ -2,11 +2,11 @@ import numpy as np
 
 class perceptron():
 #######################################     GLOBAL  VAR   ############################################
-    fileName = "test.txt"
+    fileName = "nn_debug.txt"
     weightedSum = 0.0
     activation = 0 
 #######################################    FUNCTIONS  ############################################
-    def __init__(self, no_of_inputs, targetColor, epochs=20, learning_rate=0.1):
+    def __init__(self, no_of_inputs, targetColor, epochs=500, learning_rate=0.3):
         self.epochs = epochs
         self.learning_rate = learning_rate
         self.labelsList = [] #label color
@@ -65,6 +65,12 @@ class perceptron():
             self.firedCorrectly += 1 #corectly guessed it was not the color we are
             self.zeroFire += 1
 
+    #stores weights
+    def storeWeights(self):
+        f = open("weights.txt", "w")
+        f.write(str(self.weights))
+        f.close
+
 #run for x epochs
     def trainNeuron(self):
         self.readFile()
@@ -94,6 +100,7 @@ def main():
         correct += neuron.firedCorrectly
         multiFire += neuron.multiFire
         zeroFire += neuron.zeroFire
+        neuron.storeWeights()
         print("PERCEPTRON: ", neuron.targetColor)
         print("PERCEPTRONS ACCURACY: ", round((neuron.firedCorrectly/neuron.myTotal) * 100,2), "%")
         if neuron.falsePositive != 0:
@@ -112,4 +119,8 @@ def main():
     print("PERFECTLY CLASSIFIED: ", round((correct/total) * 100, 2), "%")
 
 if __name__ == "__main__":
-    main()
+    while 1:
+        main()
+        choice = input("Run again? Enter 'n' to stop: ")
+        if choice == 'n':
+            break
